@@ -1,0 +1,177 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C LCD(0x27,20,4);
+#include <Servo.h>
+Servo SERVOMOTOR;
+Servo base;
+Servo derecho;
+Servo punta;
+int delayl=500;
+void agarrar ();
+void soltar ();
+int LEDAZUL=13;
+int LEDBLANCO1=50;
+int LEDBLANCO2=51;
+
+int LEDBLANCO3=49;
+int LEDBLANCO4=48;
+int LEDROJO=46;
+int LEDVERDE=47;
+int MOTOR=2;
+int ECHO=22;
+int TRIG=23;
+long DURACION;
+long DISTANCIA;
+int echo=52;
+int trig=53;
+long duracion;
+long distancia;
+int contador=0;
+
+void setup() {
+Serial.begin(9600);
+pinMode (LEDAZUL,OUTPUT);
+pinMode (LEDBLANCO1,OUTPUT);
+pinMode (LEDBLANCO2,OUTPUT);
+pinMode (LEDBLANCO3,OUTPUT);
+pinMode (LEDBLANCO4,OUTPUT);
+pinMode (LEDROJO,OUTPUT);
+pinMode (LEDVERDE,OUTPUT);
+pinMode (MOTOR,OUTPUT);
+pinMode (ECHO,INPUT);
+pinMode (TRIG,OUTPUT);
+pinMode (echo,INPUT);
+pinMode (trig,OUTPUT);
+
+SERVOMOTOR.attach(3);
+SERVOMOTOR.write (165);
+base.attach(4); 
+derecho.attach(5); 
+punta.attach(6); 
+base.write(0);
+derecho.write(0);
+punta.write(160);
+delay (6000);
+LCD.init();
+LCD.backlight();
+LCD.clear();
+LCD.setCursor (0,0);
+LCD.print("PROCESO:APAGADO");
+}
+
+
+void loop() {
+digitalWrite(LEDROJO,HIGH);
+digitalWrite(TRIG, LOW);
+delayMicroseconds(2);
+digitalWrite(TRIG, HIGH);          // genera el pulso de triger por 10mS
+delayMicroseconds(2);
+digitalWrite(TRIG, LOW);
+DURACION = pulseIn(ECHO, HIGH);
+DISTANCIA = (DURACION/2)/29;  //calcula la distancia en cm
+while (DISTANCIA<10){
+SERVOMOTOR.write (70);
+delay (190);
+SERVOMOTOR.write (165);
+delay (190);
+analogWrite (MOTOR,230);
+LCD.clear();
+LCD.setCursor (0,2);
+LCD.print ("CANTIDAD DE CAJAS:");
+LCD.setCursor (0,0);
+LCD.print("PROCESO:PRENDIDO");
+digitalWrite(LEDBLANCO1,HIGH);
+digitalWrite(LEDBLANCO2,HIGH);
+digitalWrite(LEDBLANCO3,HIGH);
+digitalWrite(LEDBLANCO4,HIGH);
+digitalWrite(LEDVERDE,HIGH);
+digitalWrite(LEDROJO,LOW);
+digitalWrite(trig, LOW);
+delayMicroseconds(2);
+digitalWrite(trig, HIGH);          // genera el pulso de triger por 10mS
+delayMicroseconds(2);
+digitalWrite(trig, LOW);
+duracion = pulseIn(echo, HIGH);
+distancia = (duracion/2)/29;  //calcula la distancia en cm
+Serial.println (distancia);
+if (distancia<8){
+digitalWrite(LEDAZUL,HIGH);  
+}
+else {
+digitalWrite(LEDAZUL,LOW);
+contador=contador;  
+}
+if (digitalRead(LEDAZUL)==HIGH){
+contador++;
+LCD.setCursor (18,2);
+LCD.print (contador);
+delay(400);
+}
+}
+}
+void agarrar () {
+base.write(0);
+delay(delayl); 
+base.write(20);
+delay(delayl); 
+base.write(40);
+delay(delayl); 
+base.write(60); 
+delay(delayl); 
+base.write(90);
+delay(delayl); 
+base.write(120);
+delay(delayl); 
+base.write(150);
+delay(delayl); 
+base.write(180);
+                 delay(1000);
+derecho.write(0);
+delay(delayl); 
+derecho.write(30);
+delay(delayl); 
+derecho.write(50);
+delay(delayl); 
+derecho.write(80);  
+delay(delayl); 
+derecho.write(110); 
+                 delay(2000); 
+punta.write(50);                    
+}
+void soltar () {
+                 delay(1000); 
+derecho.write(60);
+delay(delayl); 
+derecho.write(40); 
+delay(delayl); 
+derecho.write(20); 
+delay(delayl); 
+derecho.write(0);
+                  delay(1000); 
+base.write(160);
+delay(delayl); 
+base.write(120); 
+delay(delayl); 
+base.write(90); 
+delay(delayl); 
+base.write(60);  
+delay(delayl); 
+base.write(30); 
+delay(delayl); 
+base.write(0); 
+                 delay(1000); 
+derecho.write(20); 
+delay(delayl); 
+derecho.write(35); 
+delay(delayl); 
+derecho.write(70);
+                 delay(1000); 
+punta.write(160);
+                 delay(1000);
+derecho.write(40); 
+delay(delayl); 
+derecho.write(20); 
+delay(delayl); 
+derecho.write(0);
+                 delay(1000);       
+}
