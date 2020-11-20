@@ -1,0 +1,187 @@
+//Tiras leds.
+
+#include <Adafruit_NeoPixel.h>
+#define PIN 3 // PIN de datos para la tira
+#define NUMPIXELS 10 // Cantidad de pixels encendidos
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800); //Incluimos parametros del Pin de datos y cantidad de leds.
+
+uint32_t rojo = pixels.Color(255, 0, 0);
+uint32_t verde = pixels.Color(0, 255, 0);
+uint32_t blanco = pixels.Color(255, 255, 255);
+/*================================================*/
+//I2C Crystal.
+#include <Wire.h>                 // libreria necesaria para bus I2C
+#include <LiquidCrystal_I2C.h>    // libreria necesaria para display I2C
+LiquidCrystal_I2C lcd(0x27, 16, 2); // configuramos el LCD en la direccion de bus I2C que es
+
+/*===============================================*/
+//Teclado Matricial
+#include <Keypad.h>
+const byte FILAS = 4;
+const byte COLUMNAS = 4;
+
+char keys[FILAS][COLUMNAS] = {
+  { '1', '2', '3', 'A' },
+  { '4', '5', '6', 'B' },
+  { '7', '8', '9', 'C' },
+  { '#', '0', '*', 'D' }
+};
+
+const byte pinesFILAS[FILAS] = { 53, 52, 51, 50 };            //Mapeo de pines que se uiliza en las filas
+const byte pinesCOLUMNAS[COLUMNAS] = { 49, 48, 47, 46 };     //Mapeo de pines que se utilza en las columnas
+
+Keypad tecladito = Keypad(makeKeymap(keys), pinesFILAS, pinesCOLUMNAS, FILAS, COLUMNAS);
+
+char valor_seleccionado[2];                //Cree una variable para guardar 2 bits de los numeros del teclado
+char valor_maximo[2] = "20";         // Valor máximo aceptable en la programacion "20" de centimetros.
+byte index = 0;                     // Variable para correr un lugar cada vez que se digita un numero
+
+
+/*=================PROGRAMACION LEO==============================*/
+//SENSOR ULTRASONICO //
+const int EchoPin = 45;
+const int TriggerPin = 44;
+
+// PUENTE H //
+const int PWMA = 6;
+const int AIN2 = 7;
+const int AIN1 = 8;
+const int STBY = 12;
+
+int OK = 2;
+/*=================PROGRAMACION LEO==============================*/
+
+
+void setup() {
+  Serial.begin(9600);
+  lcd.init();                     // initialza el lcd
+  lcd.backlight();                // enciende la luz de fondo del display
+  lcd.setCursor(0, 0);            // apuntamos el cursor a la primera fila y primer caracter e
+  lcd.print("Ingrese valores desde 0 a 20 .");        // imprimimos el texto entre ""
+  /*=====Consignas=======*/
+  Serial.begin(9600);
+  //SENSOR ULTRASONICO CONSIGNAS//
+  pinMode(TriggerPin, OUTPUT);
+  pinMode(EchoPin, INPUT);
+
+  //PUENTE H CONSIGNAS//
+  pinMode(PWMA, OUTPUT);
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(STBY, OUTPUT);
+  digitalWrite(STBY, HIGH);
+
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(PWMA, 0);
+
+  pinMode(OK, INPUT);
+
+  delay(5000);
+}
+
+
+
+void loop() {
+  teclas();
+  lcd.setCursor(0, 0);            // apuntamos el cursor a la primera fila y primer caracter e
+  lcd.print("Ingrese valores desde 0 a 20 .");        // imprimimos el texto entre ""
+  lcd.setCursor(0, 1);       // apuntamos el cursor al primer caracter de la segunda fila
+  lcd.print(valor_seleccionado); // imprimimos el tiempo transcurrido en segundos
+  lcd.setCursor(2, 1);
+  lcd.print("centimetros");    // y el texto a continuacion
+  /*Sensor*/
+  digitalWrite(TriggerPin, LOW);
+  delayMicroseconds(10);
+  digitalWrite(TriggerPin, HIGH);
+  delayMicroseconds(10);
+
+  long pulseDuration = pulseIn(EchoPin, HIGH, 10000);
+  int distancia = (int)(0.034 * pulseDuration / 2);
+  Serial.print(distancia);
+  Serial.println("cm");
+  /*Sensor*/
+
+
+  if (distancia <= valor_seleccionado) {
+    motor_on();
+      Serial.println(valor_seleccionado);
+
+  }
+  else {
+    motor_off();
+    delay (500);
+    motor_on2();
+    delay (3000);
+    motor_off();
+
+  }
+
+}
+
+
+
+
+void motor_on () {
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(PWMA, 230);
+}
+void motor_on2() {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  digitalWrite(PWMA, 230);
+}
+void motor_off() {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(PWMA, 0);
+}
+
+void teclas() {
+  char tecla = tecladito.getKey();
+
+  if (tecla != NO_KEY) {
+    Serial.println(valor_seleccionado);
+    valor_seleccionado[index] = tecla;
+    index++;
+    delay(300);
+  }
+
+  if (index == 2) {
+    for (int i = 0; i < 2; i++) {
+      Serial.print(valor_seleccionado[i]);
+    }
+    index = 0;
+
+  }
+}
+
+void luces() {
+  /*Sensor*/
+  digitalWrite(TriggerPin, LOW);
+  delayMicroseconds(10);
+  digitalWrite(TriggerPin, HIGH);
+  delayMicroseconds(10);
+
+  long pulseDuration = pulseIn(EchoPin, HIGH, 10000);
+  int distancia = (int)(0.034 * pulseDuration / 2);
+  Serial.print(distancia);
+  Serial.println("cm");
+  /*Sensor*/
+  int cantidad_leds = 0;
+  cantidad_leds = distancia;
+
+  if (valor_seleccionado <= 10) {
+    pixels.setPixelColor( cantidad_leds, rojo);
+    pixels.show(); //
+    delay(50);
+  }
+  else if (valor_seleccionado >= 10) {
+    pixels.setPixelColor( (cantidad_leds / 2), verde);
+    pixels.show(); //
+    delay(50);
+
+  }
+
+}
