@@ -1,0 +1,77 @@
+#include <SoftwareSerial.h>  // libreria que permite establecer pines digitales
+// para comunicacion serie
+
+SoftwareSerial cubearmyBT(10, 11);  // pin 10 como RX, pin 11 como TX
+char DATO;      // variable para almacenar caracter recibido
+
+
+int LED1 = 2; // LED a pin digital numero 2
+int LED2 = 3; // LED a pin digital numero 3
+int LED3 = 4; // LED a pin digital numero 4
+int LED4 = 5; // LED a pin digital numero 5
+int LED5 = 6; // LED a pin digital numero 6
+int LED6 = 7; // LED a pin digital numero 7
+int LED7 = 8; // LED a pin digital numero 8
+int LED8 = 9; // LED a pin digital numero 9
+
+void setup() {
+  cubearmyBT.begin(38400);    // comunicacion serie entre Arduino y el modulo a 38400 bps
+  pinMode(LED1, OUTPUT); // pin 2 como salida
+  pinMode(LED2, OUTPUT); // pin 3 como salida
+  pinMode(LED3, OUTPUT); // pin 4 como salida
+  pinMode(LED4, OUTPUT); // pin 5 como salida
+  pinMode(LED5, OUTPUT); // pin 6 como salida
+  pinMode(LED6, OUTPUT); // pin 7 como salida
+  pinMode(LED7, OUTPUT); // pin 8 como salida
+  pinMode(LED8, OUTPUT); // pin 9 como salida
+
+}
+
+void loop() {
+  if (cubearmyBT.available()) {     // si hay informaciion disponible desde modulo
+    char DATO = cubearmyBT.read();   // almacena en DATO el caracter recibido desde modulo
+
+    if ( DATO == 'a' )      // si el caracter recibido es el numero 1
+      digitalWrite(LED1, !digitalRead(LED1)); // escribe valor  al leido del LED
+    if ( DATO == 'b' )      // si el caracter recibido es el opuestonumero 1
+      digitalWrite(LED2, !digitalRead(LED2)); // escribe valor opuesto al leido del LED
+    if ( DATO == 'c' )      // si el caracter recibido es el numero 1
+      digitalWrite(LED3, !digitalRead(LED3)); // escrbe valor opuesto al leido del LED
+    if ( DATO == 'd' )      // si el caracter re      cibido es el numero 1
+      digitalWrite(LED4, !digitalRead(LED4)); // escribe valor opuesto al leido del LED
+    if ( DATO == 'e' )      // si el caracter recibido es el numero 1
+      digitalWrite(LED5, !digitalRead(LED5)); // escribe valor opuesto al leido del LED
+    if ( DATO == 'f' )      // si el caracter recibido es el numero 1
+      digitalWrite(LED6, !digitalRead(LED6)); // escribe valor opuesto al leido del LED
+    if ( DATO == 'g' )      // si el caracter recibido es el numero 1
+      digitalWrite(LED7, !digitalRead(LED7)); // escribe valor  al leido del LED
+    if ( DATO == 'h' )// si el caracter recibido es el opuestonumero 1
+      digitalWrite(LED8, !digitalRead(LED8)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'i' )      // si el caracter recibido es el numero 1
+     // digitalWrite(LED9, !digitalRead(LED9)); // escrbe valor opuesto al leido del LED
+    //if ( DATO == 'j' )      // si el caracter re      cibido es el numero 1
+      //digitalWrite(LED10, !digitalRead(LED10)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'k' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED11, !digitalRead(LED11)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'l' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED12, !digitalRead(LED12)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'm' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED13, !digitalRead(LED13)); // escribe valor  al leido del LED
+    //if ( DATO == 'n' )      // si el caracter recibido es el opuestonumero 1
+      //digitalWrite(LED14, !digitalRead(LED14)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'ñ' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED15, !digitalRead(LED15)); // escrbe valor opuesto al leido del LED
+    //if ( DATO == 'o' )      // si el caracter re      cibido es el numero 1
+      //digitalWrite(LED16, !digitalRead(LED16)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'p' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED17, !digitalRead(LED17)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'q' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED18, !digitalRead(LED18)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 'r' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED19, !digitalRead(LED19)); // escribe valor opuesto al leido del LED
+    //if ( DATO == 's' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED20, !digitalRead(LED20)); // escribe valor opuesto al leido del     
+    //if ( DATO == 't' )      // si el caracter recibido es el numero 1
+      //digitalWrite(LED21, !digitalRead(LED21)); // escribe valor opuesto al leido del     
+  }
+}
